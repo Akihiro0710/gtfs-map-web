@@ -81,6 +81,8 @@ try {
 //Configure::load('app_local', 'default');
 if (isset($_ENV['CAKE_ENV'])) {
     Configure::load('app_' . $_ENV['CAKE_ENV'], 'default');
+} else {
+    Configure::load('app_local', 'default');
 }
 /*
  * Load an environment local configuration file.
