@@ -1,1 +1,1 @@
-web: vendor/bin/heroku-php-apache2 your/webroot/path
+web: vendor/bin/heroku-php-apache2 webroot/
