@@ -86,7 +86,6 @@
     popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
   });
 
-  const rowCounts = <?= json_encode($rowCounts) ?>;
   var popup = L.popup();
 
   function onMapClick(e) {
