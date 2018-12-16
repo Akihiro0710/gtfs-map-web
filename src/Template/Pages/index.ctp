@@ -26,9 +26,11 @@
     </style>
 </head>
 <body>
+<form action="" id="select">
+</form>
 <div id="mapid"></div>
 <script>
-  var map = L.map('mapid').setView([36.75, 137.1], 12);
+  var map = L.map('mapid').setView([36.73, 137.1], 13);
   L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
     attribution: 'Map data &copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>',
     maxZoom: 18,
@@ -59,33 +61,22 @@
     });
   }
 
-  getURL('/api/stops')
-      .then(stops => stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon]).addTo(map).bindPopup(stop.stop_name)))
+  getURL(encodeURI('/api/stops/0_1+平日+1'))
+      .then(stops => stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon])
+          .addTo(map)
+          .bindPopup(stop.stop_name + '<br>' + stop.time)))
       .catch(error => console.error(error));
-  const rowCounts = <?= json_encode($rowCounts) ?>;
   getURL('/api/shapes/0_1')
       .then(shapes => {
         const paths = shapes
             .sort((a, b) => a.shape_pt_sequence * 1 - b.shape_pt_sequence * 1)
             .map(shape => [shape.shape_pt_lat, shape.shape_pt_lon]);
         console.log(paths);
-        L.polyline(paths, {color: 'red'}).addTo(map);
+        L.polyline(paths, {color: '#6666ff'}).addTo(map);
       })
       .catch(error => console.error(error));
 
-  const shapes = <?= json_encode($shapes) ?>;
-
-  var circle = L.circle([36.7, 137], {
-    color: 'red',
-    fillColor: '#f03',
-    fillOpacity: 0.5,
-    radius: 500
-  }).addTo(map);
-  var polygon = L.polygon([
-    [36.509, 136.8],
-    [36.503, 136.9],
-    [36.51, 137]
-  ]).addTo(map);
+  const rowCounts = <?= json_encode($rowCounts) ?>;
   var popup = L.popup();
 
   function onMapClick(e) {

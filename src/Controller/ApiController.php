@@ -23,10 +23,22 @@ class ApiController extends AppController
         parent::initialize();
     }
 
-    public function stops()
+    public function stops($trip_id)
     {
         $this->autoRender = false;
-        $result = TableRegistry::getTableLocator()->get('Stops')->find()->toArray();
+        $stopTimes = TableRegistry::getTableLocator()
+                ->get('StopTimes')
+                ->find()
+                ->where(['trip_id' => str_replace(' ', '+', $trip_id)])
+                ->sortBy('stop_sequence', SORT_DESC);
+        $stops = TableRegistry::getTableLocator()->get('Stops');
+        $result = [];
+        foreach ($stopTimes as $stopTime) {
+            $item = $stops->find()->where(['stop_id' => $stopTime->stop_id])->first()->toArray();
+            $item['time'] = $stopTime->arrival_time;
+            $result[] = $item;
+        }
+
         echo json_encode($result);
         $this->set([
                 'result' => $result,
