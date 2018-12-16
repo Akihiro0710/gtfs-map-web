@@ -32,6 +32,11 @@ class PagesController extends AppController
 {
     public function index()
     {
+        $routes = [];
+        foreach (TableRegistry::getTableLocator()->get('Routes')->find()->toArray() as $route) {
+            $routes[$route->route_id] = $route->route_long_name;
+        }
+        $this->set(compact('routes'));
         $this->render('index');
     }
 
