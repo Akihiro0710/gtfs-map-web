@@ -30,11 +30,15 @@ use Cake\View\Exception\MissingTemplateException;
  */
 class PagesController extends AppController
 {
+    public function index()
+    {
+        $this->render('index');
+    }
 
     public function display()
     {
+        $this->render('index');
         try {
-            $this->render('index');
         } catch (MissingTemplateException $exception) {
             if (Configure::read('debug')) {
                 throw $exception;

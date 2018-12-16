@@ -26,15 +26,11 @@ class ApiController extends AppController
     public function stops()
     {
         $this->autoRender = false;
-        $stops = TableRegistry::getTableLocator()->get('Stops')->find()->toArray();
-        $result = $stops;
-        $status = !empty($result);
-        if (!$status) {
-            $error = array(
-                    'message' => 'データがありません',
-                    'code' => 404
-            );
-        }
-        return json_encode(compact('status', 'result', 'error'));
+        $result = TableRegistry::getTableLocator()->get('Stops')->find()->toArray();
+        echo json_encode($result);
+        $this->set([
+                'result' => $result,
+                '_serialize' => ['result']
+        ]);
     }
 }

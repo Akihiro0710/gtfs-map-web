@@ -18,15 +18,19 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
+use Cake\Core\Plugin;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\Routing\Route\DashedRoute;
+
 Router::defaultRouteClass(DashedRoute::class);
 
+Router::extensions(['json']);
 Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/', ['controller' => 'Pages']);
     $routes->connect('/:controller/:action');
     $routes->connect('/:controller/:action/*');
-    $routes->fallbacks(DashedRoute::class);
+    $routes->fallbacks('InflectedRoute');
 });
+Plugin::routes();
