@@ -56,46 +56,44 @@
     });
   }
 
+  var markers = [];
+  var route;
+
   function select(params) {
     var trip_id = params.trip_id;
     var shape_id = params.shape_id;
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
+    if (route) {
+      map.removeLayer(route);
+      route = null;
+    }
+    var stopIcon = L.icon({
+      iconUrl: 'img/bus_stop.gif',
+      iconSize: [50, 50],
+      iconAnchor: [25, 50], // point of the icon which will correspond to marker's location
+      popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
+    });
     getURL(encodeURI('/api/stops/' + trip_id))
-        .then(stops => stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon], {icon: stopIcon})
+        .then(stops => stops.map(stop => markers.push(L.marker([stop.stop_lat, stop.stop_lon], {icon: stopIcon})
             .addTo(map)
-            .bindPopup(stop.stop_name + '<br>' + stop.time)))
+            .bindPopup(stop.stop_name + '<br>' + stop.time))))
         .catch(error => console.error(error));
     getURL('/api/shapes/' + shape_id)
         .then(shapes => {
           const paths = shapes
               .sort((a, b) => a.shape_pt_sequence * 1 - b.shape_pt_sequence * 1)
               .map(shape => [shape.shape_pt_lat, shape.shape_pt_lon]);
-          L.polyline(paths, {color: '#6666ff'}).addTo(map);
+          route = L.polyline(paths, {color: '#6666ff'}).addTo(map);
         })
         .catch(error => console.error(error));
   }
 
-  var route = document.getElementById('route');
-  route.addEventListener('change', function (ev) {
-    getURL('/api/routes/' + route.value).then(select);
+  var routeSelector = document.getElementById('route');
+  routeSelector.addEventListener('change', function (ev) {
+    getURL('/api/routes/' + routeSelector.value).then(select);
   });
-  getURL('/api/routes/' + route.value).then(select);
-  var stopIcon = L.icon({
-    iconUrl: 'img/bus_stop.gif',
-    iconSize: [50, 50],
-    iconAnchor: [25, 50], // point of the icon which will correspond to marker's location
-    popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
-  });
-
-  var popup = L.popup();
-
-  function onMapClick(e) {
-    popup
-        .setLatLng(e.latlng)
-        .setContent("You clicked the map at " + e.latlng.toString())
-        .openOn(map);
-  }
-
-  map.on('click', onMapClick);
+  getURL('/api/routes/' + routeSelector.value).then(select);
 </script>
 </body>
 </html>
