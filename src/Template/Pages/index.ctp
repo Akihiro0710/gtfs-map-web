@@ -28,15 +28,34 @@
 <body>
 <div id="mapid"></div>
 <script>
-  var mymap = L.map('mapid').setView([36.75, 137.1], 12);
-  L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
-    attribution: 'Map data &copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>,
+  var map = L.map('mapid').setView([36.75, 137.1], 12);
+  L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>',
     maxZoom: 18,
     id: 'mapbox.streets'
-  }).addTo(mymap);
-  <?php foreach ($stops as $stop):?>
-  L.marker([<?=$stop->stop_lat?>, <?=$stop->stop_lon?>]).addTo(mymap);
-  <?php endforeach; ?>
+  }).addTo(map);
+  // var xhr = new XMLHttpRequest();
+  // xhr.open('GET', '/api/stops');
+  // xhr.addEventListener('load', function (result) {
+  //       console.log(result);
+  // });
+  // xhr.send();
+  //const stops = <?//= json_encode($stops) ?>//;
+  //const markers = stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon]).addTo(map).bindPopup(stop.stop_name));
+  //const rowCounts = <?//= json_encode($rowCounts) ?>//;
+  //const shapes = <?//= json_encode($shapes) ?>//;
+  // const paths = {};
+  // shapes.forEach(function (shape) {
+  //   if (!paths[shape.shape_id]) {
+  //     paths[shape.shape_id] = [];
+  //   }
+  //   paths[shape.shape_id].push(shape);
+  // });
+  // const lines = [];
+  // Object.keys(paths).forEach(key => {
+  //   lines.push(paths[key].sort((a, b) => a - b));
+  // });
+  // L.polyline(lines, {color: 'red'}).addTo(map);
   // var circle = L.circle([36.7, 137], {
   //   color: 'red',
   //   fillColor: '#f03',
@@ -54,9 +73,10 @@
     popup
         .setLatLng(e.latlng)
         .setContent("You clicked the map at " + e.latlng.toString())
-        .openOn(mymap);
+        .openOn(map);
   }
-  mymap.on('click', onMapClick);
+
+  map.on('click', onMapClick);
 </script>
 </body>
 </html>
