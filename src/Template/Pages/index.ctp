@@ -60,34 +60,32 @@
   }
 
   getURL('/api/stops')
-      .then(stops => {
-        const markers = stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon]).addTo(map).bindPopup(stop.stop_name));
-      }).catch(error => console.error(error));
-  //const rowCounts = <?//= json_encode($rowCounts) ?>//;
-  //const shapes = <?//= json_encode($shapes) ?>//;
-  // const paths = {};
-  // shapes.forEach(function (shape) {
-  //   if (!paths[shape.shape_id]) {
-  //     paths[shape.shape_id] = [];
-  //   }
-  //   paths[shape.shape_id].push(shape);
-  // });
-  // const lines = [];
-  // Object.keys(paths).forEach(key => {
-  //   lines.push(paths[key].sort((a, b) => a - b));
-  // });
-  // L.polyline(lines, {color: 'red'}).addTo(map);
-  // var circle = L.circle([36.7, 137], {
-  //   color: 'red',
-  //   fillColor: '#f03',
-  //   fillOpacity: 0.5,
-  //   radius: 500
-  // }).addTo(mymap);
-  // var polygon = L.polygon([
-  //   [36.509, 136.8],
-  //   [36.503, 136.9],
-  //   [36.51, 137]
-  // ]).addTo(mymap);
+      .then(stops => stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon]).addTo(map).bindPopup(stop.stop_name)))
+      .catch(error => console.error(error));
+  const rowCounts = <?= json_encode($rowCounts) ?>;
+  getURL('/api/shapes/0_1')
+      .then(shapes => {
+        const paths = shapes
+            .sort((a, b) => a.shape_pt_sequence * 1 - b.shape_pt_sequence * 1)
+            .map(shape => [shape.shape_pt_lat, shape.shape_pt_lon]);
+        console.log(paths);
+        L.polyline(paths, {color: 'red'}).addTo(map);
+      })
+      .catch(error => console.error(error));
+
+  const shapes = <?= json_encode($shapes) ?>;
+
+  var circle = L.circle([36.7, 137], {
+    color: 'red',
+    fillColor: '#f03',
+    fillOpacity: 0.5,
+    radius: 500
+  }).addTo(map);
+  var polygon = L.polygon([
+    [36.509, 136.8],
+    [36.503, 136.9],
+    [36.51, 137]
+  ]).addTo(map);
   var popup = L.popup();
 
   function onMapClick(e) {

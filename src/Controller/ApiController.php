@@ -33,4 +33,15 @@ class ApiController extends AppController
                 '_serialize' => ['result']
         ]);
     }
+
+    public function shapes($id)
+    {
+        $this->autoRender = false;
+        $result = TableRegistry::getTableLocator()->get('Shapes')->find()->where(['shape_id' => $id])->toArray();
+        echo json_encode($result);
+        $this->set([
+                'result' => $result,
+                '_serialize' => ['result']
+        ]);
+    }
 }
