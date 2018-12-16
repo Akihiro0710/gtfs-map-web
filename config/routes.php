@@ -30,4 +30,5 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/:controller/:action');
     $routes->connect('/:controller/:action/*');
     $routes->fallbacks('InflectedRoute');
+    $routes->fallbacks(DashedRoute::class);
 });

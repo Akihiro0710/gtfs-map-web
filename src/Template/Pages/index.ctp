@@ -61,8 +61,15 @@
     });
   }
 
+  var stopIcon = L.icon({
+    iconUrl: 'img/bus_stop.gif',
+    iconSize: [50, 50],
+    iconAnchor: [25, 50], // point of the icon which will correspond to marker's location
+    popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
+  });
+
   getURL(encodeURI('/api/stops/0_1+平日+1'))
-      .then(stops => stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon])
+      .then(stops => stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon], {icon: stopIcon})
           .addTo(map)
           .bindPopup(stop.stop_name + '<br>' + stop.time)))
       .catch(error => console.error(error));
@@ -71,7 +78,6 @@
         const paths = shapes
             .sort((a, b) => a.shape_pt_sequence * 1 - b.shape_pt_sequence * 1)
             .map(shape => [shape.shape_pt_lat, shape.shape_pt_lon]);
-        console.log(paths);
         L.polyline(paths, {color: '#6666ff'}).addTo(map);
       })
       .catch(error => console.error(error));
