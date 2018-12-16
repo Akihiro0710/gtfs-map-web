@@ -26,7 +26,8 @@
     </style>
 </head>
 <body>
-<form action="" id="select">
+<form action="">
+    <?= $this->Form->select('route', $routes, ['id' => 'route']) ?>
 </form>
 <div id="mapid"></div>
 <script>
@@ -36,16 +37,10 @@
     maxZoom: 18,
     id: 'mapbox.streets'
   }).addTo(map);
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', '/api/stops');
-  xhr.addEventListener('load', function (result) {
-    console.log(result);
-  });
 
   function getURL(URL) {
     return new Promise((resolve, reject) => {
       let req = new XMLHttpRequest();
-      xhr.setRequestHeader('Content-Type', 'application/json');
       req.open('GET', URL, true);
       req.onload = function () {
         if (req.status === 200) {
@@ -61,26 +56,35 @@
     });
   }
 
+  function select(params) {
+    var trip_id = params.trip_id;
+    var shape_id = params.shape_id;
+    getURL(encodeURI('/api/stops/' + trip_id))
+        .then(stops => stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon], {icon: stopIcon})
+            .addTo(map)
+            .bindPopup(stop.stop_name + '<br>' + stop.time)))
+        .catch(error => console.error(error));
+    getURL('/api/shapes/' + shape_id)
+        .then(shapes => {
+          const paths = shapes
+              .sort((a, b) => a.shape_pt_sequence * 1 - b.shape_pt_sequence * 1)
+              .map(shape => [shape.shape_pt_lat, shape.shape_pt_lon]);
+          L.polyline(paths, {color: '#6666ff'}).addTo(map);
+        })
+        .catch(error => console.error(error));
+  }
+
+  var route = document.getElementById('route');
+  route.addEventListener('change', function (ev) {
+    getURL('/api/routes/' + route.value).then(select);
+  });
+
   var stopIcon = L.icon({
     iconUrl: 'img/bus_stop.gif',
     iconSize: [50, 50],
     iconAnchor: [25, 50], // point of the icon which will correspond to marker's location
     popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
   });
-
-  getURL(encodeURI('/api/stops/0_1+平日+1'))
-      .then(stops => stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon], {icon: stopIcon})
-          .addTo(map)
-          .bindPopup(stop.stop_name + '<br>' + stop.time)))
-      .catch(error => console.error(error));
-  getURL('/api/shapes/0_1')
-      .then(shapes => {
-        const paths = shapes
-            .sort((a, b) => a.shape_pt_sequence * 1 - b.shape_pt_sequence * 1)
-            .map(shape => [shape.shape_pt_lat, shape.shape_pt_lon]);
-        L.polyline(paths, {color: '#6666ff'}).addTo(map);
-      })
-      .catch(error => console.error(error));
 
   const rowCounts = <?= json_encode($rowCounts) ?>;
   var popup = L.popup();

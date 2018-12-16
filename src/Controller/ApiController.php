@@ -23,6 +23,32 @@ class ApiController extends AppController
         parent::initialize();
     }
 
+    public function routes($id)
+    {
+        $this->autoRender = false;
+        $trip = TableRegistry::getTableLocator()->get('Trips')->find()->where(['route_id' => $id])->first();
+        $result = [
+                'trip_id' => $trip->trip_id,
+                'shape_id' => $trip->shape_id
+        ];
+        echo json_encode($result);
+        $this->set([
+                'result' => $result,
+                '_serialize' => ['result']
+        ]);
+    }
+
+    public function trips()
+    {
+        $this->autoRender = false;
+        $result = TableRegistry::getTableLocator()->get('Shapes')->find()->where(['shape_id' => $id])->toArray();
+        echo json_encode($result);
+        $this->set([
+                'result' => $result,
+                '_serialize' => ['result']
+        ]);
+    }
+
     public function stops($trip_id)
     {
         $this->autoRender = false;
