@@ -78,7 +78,7 @@
   route.addEventListener('change', function (ev) {
     getURL('/api/routes/' + route.value).then(select);
   });
-
+  getURL('/api/routes/' + route.value).then(select);
   var stopIcon = L.icon({
     iconUrl: 'img/bus_stop.gif',
     iconSize: [50, 50],
