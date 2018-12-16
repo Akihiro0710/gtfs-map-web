@@ -31,29 +31,8 @@ use Cake\View\Exception\MissingTemplateException;
 class PagesController extends AppController
 {
 
-    public function index()
-    {
-        $stops = TableRegistry::getTableLocator()->get('Stops')->find();
-        $this->set(compact('stops'));
-        try {
-            $this->render('index');
-        } catch (MissingTemplateException $exception) {
-            if (Configure::read('debug')) {
-                throw $exception;
-            }
-            throw new NotFoundException();
-        }
-    }
-
-    /**
-     * Displays a view
-     *
-     * @return void
-     */
     public function display()
     {
-        $stops = TableRegistry::getTableLocator()->get('Stops')->find();
-        $this->set(compact('stops'));
         try {
             $this->render('index');
         } catch (MissingTemplateException $exception) {

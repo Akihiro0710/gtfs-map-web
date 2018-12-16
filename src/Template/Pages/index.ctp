@@ -34,14 +34,35 @@
     maxZoom: 18,
     id: 'mapbox.streets'
   }).addTo(map);
-  // var xhr = new XMLHttpRequest();
-  // xhr.open('GET', '/api/stops');
-  // xhr.addEventListener('load', function (result) {
-  //       console.log(result);
-  // });
-  // xhr.send();
-  //const stops = <?//= json_encode($stops) ?>//;
-  //const markers = stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon]).addTo(map).bindPopup(stop.stop_name));
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/api/stops');
+  xhr.addEventListener('load', function (result) {
+    console.log(result);
+  });
+
+  function getURL(URL) {
+    return new Promise((resolve, reject) => {
+      let req = new XMLHttpRequest();
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      req.open('GET', URL, true);
+      req.onload = function () {
+        if (req.status === 200) {
+          resolve(JSON.parse(req.responseText));
+        } else {
+          reject(new Error(req.statusText));
+        }
+      };
+      req.onerror = function () {
+        reject(new Error(req.statusText));
+      };
+      req.send();
+    });
+  }
+
+  getURL('/api/stops')
+      .then(stops => {
+        const markers = stops.map(stop => L.marker([stop.stop_lat, stop.stop_lon]).addTo(map).bindPopup(stop.stop_name));
+      }).catch(error => console.error(error));
   //const rowCounts = <?//= json_encode($rowCounts) ?>//;
   //const shapes = <?//= json_encode($shapes) ?>//;
   // const paths = {};
